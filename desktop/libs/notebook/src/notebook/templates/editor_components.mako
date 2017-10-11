@@ -177,7 +177,7 @@ ${ sqlSyntaxDropdown.sqlSyntaxDropdown() }
         <div class="btn-group">
           <a class="btn" rel="tooltip" data-placement="bottom" data-loading-text="${ _("Saving...") }" data-bind="click: function() { if ($root.canSave() ) { saveNotebook() } else { $('#saveAsModal${ suffix }').modal('show');} }, attr: { title: $root.canSave() ? '${ _ko('Save') }' : '${ _ko('Save As') }' }"><i class="fa fa-save"></i></a>
 
-          <!-- ko if: $root.canSave -->
+##           <!-- ko if: $root.canSave -->
           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li>
@@ -185,8 +185,15 @@ ${ sqlSyntaxDropdown.sqlSyntaxDropdown() }
                 <i class="fa fa-fw fa-save"></i> ${ _('Save as...') }
               </a>
             </li>
+            <li>
+              <a class="pointer" data-bind="click: function() { $('#gitCommitModal${ suffix }').modal('show'); }">
+                <i class="fa fa-fw fa-save"></i> ${ _('Commit and Push') }
+              </a>
+            </li>
+            <li>
+            </li>
           </ul>
-          <!-- /ko -->
+##           <!-- /ko -->
         </div>
 
         <!-- ko template: { ifnot: editorMode, name: 'notebook-actions' }--><!-- /ko -->
@@ -1891,6 +1898,38 @@ ${ sqlSyntaxDropdown.sqlSyntaxDropdown() }
         <label class="control-label">${_('Name')}</label>
         <div class="controls">
           <input type="text" class="input-xlarge" data-bind="value: $root.selectedNotebook().name, valueUpdate:'afterkeydown'"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">${_('Description')}</label>
+        <div class="controls">
+          <input type="text" class="input-xlarge" data-bind="value: $root.selectedNotebook().description, valueUpdate:'afterkeydown'" placeholder="${ _('(optional)') }"/>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a class="btn" data-dismiss="modal">${_('Cancel')}</a>
+    <input type="button" class="btn btn-primary disable-feedback" value="${_('Save')}" data-dismiss="modal" data-bind="click: saveAsNotebook, enable: $root.selectedNotebook().name().length > 0"/>
+  </div>
+  <!-- /ko -->
+</div>
+
+<div id="gitCommitModal${ suffix }" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="${ _('Close') }"><span aria-hidden="true">&times;</span></button>
+    <!-- ko if: $root.editorMode() -->
+    <h2 class="modal-title">${_('Commit changes to GitHub')}</h2>
+    <!-- /ko -->
+  </div>
+
+  <!-- ko if: $root.selectedNotebook() -->
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label">${_('Repo Name')}</label>
+        <div class="controls">
+            <input type="text" class="input-xlarge" placeholder="${ user.username }"/>
         </div>
       </div>
       <div class="control-group">
