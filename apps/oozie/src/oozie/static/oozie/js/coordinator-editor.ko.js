@@ -32,6 +32,7 @@ var CoordinatorEditorViewModel = (function () {
 
     self.properties = ko.mapping.fromJS(typeof coordinator.properties != "undefined" && coordinator.properties != null ? coordinator.properties : {});
     self.variables = ko.mapping.fromJS(typeof coordinator.variables != "undefined" && coordinator.variables != null ? coordinator.variables : []);
+    self.dependencies = ko.mapping.fromJS(typeof coordinator.dependencies != "undefined" && coordinator.dependencies != null ? coordinator.dependencies : []);
 
     self.variablesUI = ko.observableArray(['parameter', 'input_path', 'output_path']);
     self.showAdvancedFrequencyUI = ko.observable(typeof coordinator.showAdvancedFrequencyUI != "undefined" && coordinator.showAdvancedFrequencyUI != null ? coordinator.showAdvancedFrequencyUI : false);
@@ -212,6 +213,34 @@ var CoordinatorEditorViewModel = (function () {
       }
       else {
         return ko.utils.arrayFilter(self.workflows(), function (wf) {
+          return wf.name().toLowerCase().indexOf(_filter.toLowerCase()) > -1;
+        });
+      }
+    }, self);
+
+    self.dependencyModalFilter = ko.observable("");
+    self.filteredModalDependencies = ko.computed(function () {
+      var _filter = self.dependencyModalFilter().toLowerCase();
+
+      // The possible dependencies come from the list of all workflows.
+      var possibleDependencies = self.workflows();
+
+      if (self.coordinator.properties.workflow()) {
+        possibleDependencies = ko.utils.arrayFilter(possibleDependencies, function (dep) {
+
+          // Workflows are valid to be selected as dependencies if:
+          // 1) They are not the workflow being scheduled
+          // 2) They are not already selected as a dependency
+          return dep.uuid() !== self.coordinator.properties.workflow()
+            && !ko.mapping.toJS(self.coordinator.dependencies).includes(dep.uuid());
+        });
+      }
+
+      if (!_filter) {
+        return possibleDependencies;
+      }
+      else {
+        return ko.utils.arrayFilter(possibleDependencies, function (wf) {
           return wf.name().toLowerCase().indexOf(_filter.toLowerCase()) > -1;
         });
       }

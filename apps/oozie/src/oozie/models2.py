@@ -3189,6 +3189,7 @@ class Coordinator(Job):
           'uuid': None,
           'name': 'My Schedule',
           'variables': [], # Aka workflow parameters
+          'dependencies': [],
           'properties': {
               'description': '',
               'deployment_dir': '',

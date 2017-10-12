@@ -168,6 +168,28 @@ from django.utils.translation import ugettext as _
         </div>
       </div>
 
+      <div class="card card-home" data-bind="visible: coordinator.properties.workflow() || coordinator.properties.document()" style="margin-top: 20px">
+        <h1 class="card-heading simple">${ _('Workflow dependencies (optional)') }</h1>
+        <span class="muted" data-bind="visible: coordinator.dependencies().length == 0 && ! isEditing()">${ _('This coordinator has no defined dependencies.') }</span>
+        <div class="card-body" data-bind="foreach: coordinator.dependencies()">
+          <!-- ko if: $root.isEditing -->
+          <a href="#" class="inactive-action" data-bind="click: function(){ $root.coordinator.dependencies.remove($data) }, visible: $root.isEditing">
+            <i class="fa fa-minus"></i>
+          </a>
+          <!-- /ko -->
+          <span data-bind="text: $root.getWorkflowById($data).name"></span>
+          <a data-bind="hueLink: '${ url('oozie:edit_workflow') }?workflow=' + $data" title="${ _('Open') }">
+            <i class="fa fa-external-link-square"></i>
+          </a>
+          <br>
+        </div>
+        <!-- ko if: $root.coordinator.dependencies().length !== 0 && isEditing() -->
+        <br>
+        <!-- /ko -->
+        <a class="pointer" data-bind="visible: isEditing, click: showChooseDependencies">
+          <i class="fa fa-plus"></i> ${ _('Add dependency') }
+        </a>
+      </div>
 
       <div class="card card-home" data-bind="visible: coordinator.properties.workflow() || coordinator.properties.document()" style="margin-top: 20px; margin-bottom: 20px">
         <h1 class="card-heading simple">${ _('Parameters') }</h1>
@@ -415,6 +437,42 @@ from django.utils.translation import ugettext as _
       </ul>
       <div class="label inline" data-bind="visible: $root.filteredModalWorkflows().length == 0" style="line-height: 30px">
         ${_('There are no workflows matching your search term.')}
+      </div>
+    </div>
+  </div>
+  %if not is_embeddable:
+  <div><a class="pointer demi-modal-chevron" data-dismiss="modal"><i class="fa fa-chevron-up"></i></a></div>
+  %endif
+</div>
+
+<div id="chooseWorkflowDependenciesModal" class="${ is_embeddable and 'modal' or 'demi-modal' } fade" data-backdrop="${ is_embeddable and 'true' or 'false' }">
+  %if is_embeddable:
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="${ _('Close') }"><span aria-hidden="true">&times;</span></button>
+    <h2 id="myModalLabel" class="modal-title">${_('Select workflows to depend on')}</h2>
+  </div>
+  %endif
+  <div class="modal-body">
+    %if not is_embeddable:
+    <a href="javascript: void(0)" data-dismiss="modal" class="pull-right"><i class="fa fa-times"></i></a>
+    %endif
+    <div style="float: left; margin-right: 10px;text-align: center">
+      <input type="text" data-bind="clearable: $root.dependencyModalFilter, valueUpdate:'afterkeydown'" placeholder="${_('Filter dependencies')}" class="input" style="float: left" /><br/>
+    </div>
+    <div>
+      <ul data-bind="foreach: $root.filteredModalDependencies().sort(function (l, r) { return l.name() > r.name() ? 1 : -1 }), visible: $root.filteredModalDependencies().length > 0"
+          class="unstyled inline fields-chooser" style="height: 100px; overflow-y: auto">
+        <li style="${ not is_embeddable and 'line-height: 30px' or ''}">
+          <span class="badge badge-info" data-bind="click: selectDependency">
+            <span data-bind="text: name(), attr: {'title': uuid()}"></span>
+          </span>
+          <a data-bind="hueLink: '${ url('oozie:edit_workflow') }?workflow=' + uuid()" title="${ _('Open') }">
+            <i class="fa fa-external-link-square"></i>
+          </a>
+        </li>
+      </ul>
+      <div class="label inline" data-bind="visible: $root.filteredModalDependencies().length == 0" style="line-height: 30px">
+        ${_('There are no dependencies matching your search term.')}
       </div>
     </div>
   </div>

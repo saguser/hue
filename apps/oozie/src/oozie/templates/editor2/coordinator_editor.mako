@@ -170,6 +170,14 @@ ${ scheduler.import_sla_cron(coordinator_json) }
     $("#chooseWorkflowDemiModal").modal("hide");
   }
 
+  function showChooseDependencies() {
+    $("#chooseWorkflowDependenciesModal").modal("show");
+  }
+
+  function selectDependency(dep) {
+    viewModel.coordinator.dependencies.push(dep.uuid());
+  }
+
   var firstToggled = true;
   $(document).on("editingToggled", function () {
     if (firstToggled && window.location.pathname.indexOf('/oozie/editor/coordinator') > -1) {
