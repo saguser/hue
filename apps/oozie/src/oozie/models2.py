@@ -1614,9 +1614,9 @@ class ShellAction(Action):
   FIELDS = {
      'shell_command': {
           'name': 'shell_command',
-          'label': _('Shell command'),
+          'label': _('Vertica ETL'),
           'value': '',
-          'help_text': _('Shell command to execute, e.g script.sh'),
+          'help_text': _('Vertica ETL file path'),
           'type': ''
      },
      'arguments': {
@@ -2042,9 +2042,9 @@ class SparkAction(Action):
      },
      'files': {
           'name': 'files',
-          'label': _('Files'),
+          'label': _('src hive table name'),
           'value': [],
-          'help_text': _('Path to file to put in the running directory.'),
+          'help_text': _('Name of the  hive table .'),
           'type': ''
      },
     'class': {
@@ -2056,9 +2056,9 @@ class SparkAction(Action):
      },
      'jars': {
           'name': 'jars',
-          'label': _('Jar/py name'),
+          'label': _('vertica table name'),
           'value': '',
-          'help_text': _('Name of main file added in Files.'),
+          'help_text': _('Name of the vertica table name.'),
           'type': 'text'
      },
      'spark_opts': {

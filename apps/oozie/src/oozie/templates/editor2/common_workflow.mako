@@ -225,7 +225,7 @@
       <!-- /ko -->
 
       <!-- ko if: widgetType() == 'spark-widget' || widgetType() == 'spark-document-widget' -->
-      <img src="${ static('oozie/art/icon_spark_48.png') }" class="widget-icon" alt="${ _('Spark icon') }">
+      <img src="${ static('oozie/art/vertica.png') }" class="widget-icon" alt="Vertica">
       <!-- /ko -->
 
       <!-- ko if: widgetType() == 'generic-widget' -->

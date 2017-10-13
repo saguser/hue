@@ -295,6 +295,15 @@ ${ layout.menubar(section='workflows', is_editor=True, pullright=buttons, is_emb
          <a class="draggable-icon"><img src="${ static('oozie/art/icon_spark_48.png') }" class="app-icon" alt="${ _('Spark icon') }"></a>
     </div>
     <!-- /ko -->
+    
+    <!-- ko if: $root.availableActions().length == 0 || $root.availableActions().indexOf('spark2') != -1 -->
+    <div data-bind="css: { 'draggable-widget': true },
+                    draggable: {data: draggableSparkAction(), isEnabled: true,
+                    options: {'refreshPositions': true, 'stop': function(){ $root.isDragging(false); }, 'start': function(event, ui){ $root.isDragging(true); $root.currentlyDraggedWidget(draggableSparkAction());}}}"
+         title="${_('Vertica Ingestion')}" rel="tooltip" data-placement="top">
+         <a class="draggable-icon"><img src="${ static('oozie/art/vertica.png') }" class="app-icon"></a>
+    </div>
+    <!-- /ko -->
 
     <!-- ko if: $root.availableActions().length == 0 || $root.availableActions().indexOf('java') != -1 -->
     <div data-bind="css: { 'draggable-widget': true },
@@ -336,8 +345,8 @@ ${ layout.menubar(section='workflows', is_editor=True, pullright=buttons, is_emb
     <div data-bind="css: { 'draggable-widget': true },
                     draggable: {data: draggableShellAction(), isEnabled: true,
                     options: {'refreshPositions': true, 'stop': function(){ $root.isDragging(false); }, 'start': function(event, ui){ $root.isDragging(true); $root.currentlyDraggedWidget(draggableShellAction());}}}"
-         title="${_('Shell')}" rel="tooltip" data-placement="top">
-         <a class="draggable-icon"><i class="fa fa-terminal"></i></a>
+         title="${_('Vertica ETL')}" rel="tooltip" data-placement="top">
+         <a class="draggable-icon"><img src="${ static('oozie/art/verticaETL.png') }" class="app-icon"></a>
     </div>
     <!-- /ko -->
 
