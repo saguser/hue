@@ -205,8 +205,8 @@ def _filter_oozie_jobs(user, filters, kwargs):
     elif 'username' in text_filters:
       kwargs['filters'].append(('user', text_filters['username']))
 
-    if 'time' in filters:
-      kwargs['filters'].extend([('startcreatedtime', '-%s%s' % (filters['time']['time_value'], filters['time']['time_unit'][:1]))])
+    #if 'time' in filters:
+      #kwargs['filters'].extend([('startcreatedtime', '-%s%s' % (filters['time']['time_value'], filters['time']['time_unit'][:1]))])
 
     if ENABLE_OOZIE_BACKEND_FILTERING.get() and text_filters.get('text'):
       kwargs['filters'].extend([('text', text_filters.get('text'))])
