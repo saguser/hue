@@ -38,6 +38,7 @@ from notebook.decorators import api_error_handler, check_document_access_permiss
 from notebook.models import escape_rows, make_notebook
 from notebook.views import upgrade_session_properties
 
+import huegithub as git
 
 LOG = logging.getLogger(__name__)
 
@@ -337,6 +338,13 @@ def _save_notebook(notebook, user):
   notebook_doc.description = notebook_doc1.description = notebook['description']
   notebook_doc.save()
   notebook_doc1.save()
+  query_str = str(notebook['snippets'][0]['statement'])
+  name_str = "/"+str(notebook['name'])
+
+  if git.file_exists(name_str) is None:
+    git.file_create(name_str, 'first commit', query_str, 'master')
+  else:
+    git.file_update(name_str, 'first commit', query_str)
 
   return notebook_doc, save_as
 
