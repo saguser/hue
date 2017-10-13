@@ -136,7 +136,6 @@ class JdbcApi(Api):
 
     assist = Assist(self.db)
     response = {'status': -1}
-
     if database is None:
       response['databases'] = assist.get_databases()
     elif table is None:
@@ -184,20 +183,32 @@ class Assist():
     self.db = db
 
   def get_databases(self):
-    dbs, description = query_and_fetch(self.db, 'SELECT DatabaseName FROM DBC.Databases')
-    return [db[0] and db[0].strip() for db in dbs]
+    if self.db.jdbc_driver == "com.vertica.jdbc.Driver":
+      dbs, description = query_and_fetch(self.db, 'SELECT distinct table_schema FROM v_catalog.tables')
+      return [db[0] and db[0].strip() for db in dbs]
+    else:
+      dbs, description = query_and_fetch(self.db, 'SELECT distinct table_schema FROM v_catalog.tables')
+      return [db[0] and db[0].strip() for db in dbs]
 
   def get_tables(self, database, table_names=[]):
-    tables, description = query_and_fetch(self.db, "SELECT * FROM dbc.tables WHERE tablekind = 'T' and databasename='%s'" % database)
-    return [{"comment": table[7] and table[7].strip(), "type": "Table", "name": table[1] and table[1].strip()} for table in tables]
+    if self.db.jdbc_driver == "com.vertica.jdbc.Driver":
+      tables, description = query_and_fetch(self.db, "SELECT * FROM v_catalog.tables where upper(table_schema) = upper('%s')" % database)
+      return [{"comment": table[13] and table[13].strip(), "type": "Table", "name": table[3] and table[3].strip()} for table in tables]
+    else:
+      tables, description = query_and_fetch(self.db, "SELECT table_name FROM tables WHERE table_schema='%s'" % database.upper())
+      return [{"comment": table[7] and table[7].strip(), "type": "Table", "name": table[1] and table[1].strip()} for table in tables]
 
   def get_columns(self, database, table):
-    columns, description = query_and_fetch(self.db, "SELECT ColumnName, ColumnType, CommentString FROM DBC.Columns WHERE DatabaseName='%s' AND TableName='%s'" % (database, table))
-    return [[col[0] and col[0].strip(), self._type_converter(col[1]), '', '', col[2], ''] for col in columns]
+    if self.db.jdbc_driver == "com.vertica.jdbc.Driver":
+      columns, description = query_and_fetch(self.db, "SELECT column_name, data_type, '' as comment FROM v_catalog.columns WHERE upper(table_schema)=upper('%s') AND upper(table_name)=upper('%s')" % (database, table))
+      return [[col[0] and col[0].strip(), col[1], '', '', col[2], ''] for col in columns]
+    else:
+      columns, description = query_and_fetch(self.db, "SELECT ColumnName, ColumnType, CommentString FROM DBC.Columns WHERE DatabaseName='%s' AND TableName='%s'" % (database, table))
+      return [[col[0] and col[0].strip(), self._type_converter(col[1]), '', '', col[2], ''] for col in columns]
 
   def get_sample_data(self, database, table, column=None):
     column = column or '*'
-    return query_and_fetch(self.db, 'SELECT %s FROM %s.%s' % (column, database, table))
+    return query_and_fetch(self.db, 'SELECT %s FROM %s.%s limit 100' % (column, database, table))
 
   def _type_converter(self, name):
     return {
